@@ -1,28 +1,33 @@
-import qrcode
+from pytubefix import YouTube
+import tkinter as tk
+from tkinter import filedialog
 
-# take upi id as a input
-upi_id=input("Enter your UPI ID: ")
-# Upi://pay?pa=UPI_ID&apn=NAME&am=Amount&cu=CURRENCY&tn=MESSAGE
-# Pa=the upi id we will do payment on it
-# pn=recipient name
-# am=amount 
-# cu=currency
-# tn=payment message 
+def download_video(url,save_path):
+    try:
+        yt=YouTube(url)
+        streams=yt.streams.filter(progressive=True,file_extension="mp4")
+        highest_res_stream=streams.get_highest_resolution()
+        highest_res_stream.download(output_path=save_path)
+        print("Video downloaded succesfully !!")
+    except Exception as e:
+        print(e)
+def open_file_dialog():
+    folder=filedialog.askdirectory()
+    if folder:
+        print(f"selected folder: {folder}")
+    return folder
 
-Phonepe_url=f'upi://pay?pa={upi_id}&pn=Recipient%20Name&mc=1234'
-Googlepay_url=f'upi://pay?pa={upi_id}&pn=Recipient%20Name&mc=1234'
-Paytm_url=f'upi://pay?pa={upi_id}&pn=Recipient%20Name&mc=1234'
 
-Phonepe_qr=qrcode.make(Phonepe_url)
-paytm_qr=qrcode.make(Paytm_url)
-googlepay_qr=qrcode.make(Googlepay_url)
-
-# save the  Qr code
-Phonepe_qr.save('Phonepe_qr.png')
-paytm_qr.save('Phonepe_qr.png')
-googlepay_qr.save('Phonepe_qr.png')
-
-# Display the Qr code
-Phonepe_qr.show()
-googlepay_qr.show()
-paytm_qr.show()
+if __name__== "__main__":
+    root=tk.Tk()
+    root.withdraw()
+    
+    video_url = input("please enter your link: ").strip()
+    video_url = video_url.split("&")[0] 
+    save_dir=open_file_dialog()
+    
+    if save_dir:
+        print("Download started......")
+        download_video(video_url,save_dir) 
+    else:
+        print("Invalid save location")
